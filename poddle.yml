@@ -2,14 +2,14 @@ poddle:
   version: "1.0"
   project: "feed-ontario"
   type: "WEB_SERVICE"
-  appName: "authentication-service"
+  appName: "order-service"
   health: "/health"
   port: 8080
   env:
     preview:
       branch: "main"
       entryPoint: "index.js"
-      domain: "authentication-service-api.poddleops.com"
+      domain: "order-service-api.poddleops.com"
       specs:
         compute:
           cpu: 2
