@@ -6,19 +6,14 @@ poddle:
   health: /health
   port: 8080
   env:
-    production:
+    qa:
       branch: main
       entryPoint: index.js
-      domain: api.google.poddleops.com
       specs:
         compute:
           cpu: 2
           memory: 2
           storage: 30
-          autoScaling:
-            replica:
-              min: 1
-              max: 3
         database:
           cpu: 2
           memory: 1
