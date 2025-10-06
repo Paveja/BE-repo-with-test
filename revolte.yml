@@ -1,5 +1,5 @@
 revolte:
-  version: "1.0"
+  version: '1.0'
   project: Star
   appName: Knight
   config:
@@ -22,9 +22,9 @@ revolte:
             port: 8080
             variables:
               BASE_URL: /api/v1
-              ACCESS_KEY_ID: "#{storage_bucket_service.accessKeyId}"
-              SECRET_ACCESS_KEY_ID: "#{storage_bucket_service.secretAccessKeyId}"
-              REGION: "#{storage_bucket_service.region}"
+              ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
+              SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
+              REGION: '#{storage_bucket_service.region}'
           specifications:
             cpu: 2
             memory: 1
@@ -37,25 +37,25 @@ revolte:
             versioningStatus: enabled
             public: true
     qa:
-      branch: dev
+      branch: main
       codeReview: false
       codeQuality: false
       services:
         rid_1:
           type: WEB_SERVICE
           name: web_service
-          entryPoint: index.js
+          entryPoint: app.js
           properties:
             health: /health
             port: 8080
             variables:
               BASE_URL: /api/v1
-              ACCESS_KEY_ID: "#{storage_bucket_service.accessKeyId}"
-              SECRET_ACCESS_KEY_ID: "#{storage_bucket_service.secretAccessKeyId}"
-              REGION: "#{storage_bucket_service.region}"
+              ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
+              SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
+              REGION: '#{storage_bucket_service.region}'
           specifications:
             cpu: 2
-            memory: 1
+            memory: 2
             storage: 30
         rid_2:
           type: STORAGE_BUCKET
@@ -78,9 +78,9 @@ revolte:
             port: 8080
             variables:
               BASE_URL: /api/v1
-              ACCESS_KEY_ID: "#{storage_bucket_service.accessKeyId}"
-              SECRET_ACCESS_KEY_ID: "#{storage_bucket_service.secretAccessKeyId}"
-              REGION: "#{storage_bucket_service.region}"
+              ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
+              SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
+              REGION: '#{storage_bucket_service.region}'
           specifications:
             cpu: 2
             memory: 1
