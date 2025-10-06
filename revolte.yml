@@ -3,10 +3,10 @@ revolte:
   project: Strike
   appName: Kenndal
   config:
-    codeReview:
-      summarize: true
-      suggestFixes: true
-      commentStyle: Balanced
+    # codeReview:
+    #   summarize: true
+    #   suggestFixes: true
+    #   commentStyle: Balanced
   env:
     staging:
       branch: dev
