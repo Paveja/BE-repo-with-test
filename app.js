@@ -42,7 +42,7 @@ app.post("/upload", async (req, res) => {
       return res.status(400).send("No file received");
     }
 
-    const bucketName = process.env.BUCKET_NAME
+    const bucketName = process.env.BUCKET_NAME ?? 'kendall-bucket-red-qa'
     const key = "apple.png";
 
     // Upload to S3

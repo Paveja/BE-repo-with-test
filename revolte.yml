@@ -53,7 +53,7 @@ revolte:
               ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
               SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
               REGION: '#{storage_bucket_service.region}'
-              BUCKET_NAME: kendall-bucket-red-preview
+              BUCKET_NAME: kendall-bucket-red-qa
           specifications:
             cpu: 2
             memory: 2
@@ -64,7 +64,7 @@ revolte:
           configurations:
             bucketName: kendall-bucket-red-qa
             versioningStatus: enabled
-            public: true
+            public: false
     production:
       branch: dev
       codeReview: false
