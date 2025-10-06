@@ -31,8 +31,8 @@ app.use("/upload", express.raw({ type: "*/*", limit: "50mb" }));
 const s3 = new S3Client({
   region: process.env.REGION,
   credentials: {
-    accessKeyId: process.env.ACCESS_KEY,
-    secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_ACCESS_KEY_ID,
   },
 });
 app.post("/upload", async (req, res) => {
