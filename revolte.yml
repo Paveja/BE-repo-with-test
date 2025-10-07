@@ -108,6 +108,6 @@ revolte:
           type: STORAGE_BUCKET
           name: storage_bucket_service
           configurations:
-            bucketName: kenndall-bucket-red-preview
+            bucketName: summa-first-bucket
             versioningStatus: enabled
             public: true
