@@ -52,7 +52,7 @@ revolte:
           type: STORAGE_BUCKET
           name: storage_bucket_service
           configurations:
-            bucketName: kendall-bucket-blue-qa
+            bucketName: kendall-bucket-red-qa
             versioningStatus: suspended
             public: true
     production:
