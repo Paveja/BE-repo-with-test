@@ -2,16 +2,9 @@ revolte:
   version: '1.0'
   project: Strike
   appName: Kenndal
-  # config:
-    # codeReview:
-    #   summarize: true
-    #   suggestFixes: true
-    #   commentStyle: Balanced
   env:
     staging:
       branch: dev
-      codeReview: false
-      codeQuality: false
       services:
         rid_1:
           type: WEB_SERVICE
@@ -38,8 +31,6 @@ revolte:
             public: true
     qa:
       branch: main
-      codeReview: false
-      codeQuality: false
       services:
         rid_1:
           type: WEB_SERVICE
@@ -53,7 +44,6 @@ revolte:
               ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
               SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
               REGION: '#{storage_bucket_service.region}'
-              BUCKET_NAME: kendall-bucket-green-qa
           specifications:
             cpu: 2
             memory: 2
@@ -62,13 +52,11 @@ revolte:
           type: STORAGE_BUCKET
           name: storage_bucket_service
           configurations:
-            bucketName: kendall-bucket-green-qa
+            bucketName: kendall-bucket-blue-qa
             versioningStatus: suspended
             public: true
     production:
       branch: dev
-      codeReview: false
-      codeQuality: false
       services:
         rid_1:
           type: WEB_SERVICE
@@ -98,8 +86,6 @@ revolte:
             versioningStatus: enabled
             public: true
     preview:
-      codeReview: false
-      codeQuality: false
       services:
         rid_1:
           type: WEB_SERVICE
