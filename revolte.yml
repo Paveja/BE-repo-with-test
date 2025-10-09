@@ -2,6 +2,11 @@ revolte:
   version: '1.0'
   project: Strike
   appName: Knight
+  config:
+    codeQuality:
+      codeStyle:
+        rules:
+          javascript/arrayCallbackReturn: error
   env:
     staging:
       branch: dev
@@ -31,6 +36,9 @@ revolte:
             public: true
     qa:
       branch: main
+      codeReview: false
+      codeQuality: true
+      testSuite: false
       services:
         rid_1:
           type: WEB_SERVICE
