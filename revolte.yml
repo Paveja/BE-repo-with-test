@@ -52,21 +52,21 @@ revolte:
             port: 8080
             variables:
               BASE_URL: /api/v1
-              ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
-              SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
-              REGION: '#{storage_bucket_service.region}'
-              Random variable: '1234'
+              # ACCESS_KEY_ID: '#{storage_bucket_service.accessKeyId}'
+              # SECRET_ACCESS_KEY_ID: '#{storage_bucket_service.secretAccessKeyId}'
+              # REGION: '#{storage_bucket_service.region}'
+              # Random variable: '1234'
           specifications:
             cpu: 2
             memory: 2
             storage: 30
-        rid_2:
-          type: STORAGE_BUCKET
-          name: storage_bucket_service
-          configurations:
-            bucketName: kendall-bucket-yellow-qa
-            versioningStatus: suspended
-            public: true
+        # rid_2:
+        #   type: STORAGE_BUCKET
+        #   name: storage_bucket_service
+        #   configurations:
+        #     bucketName: kendall-bucket-yellow-qa
+        #     versioningStatus: suspended
+        #     public: true
     production:
       branch: dev
       codeReview: false
