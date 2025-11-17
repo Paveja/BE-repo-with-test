@@ -4,6 +4,7 @@
 // import { S3Client, PutObjectCommand,GetObjectCommand } from "@aws-sdk/client-s3";
 // import fs from "fs";
 import express from "express";
+import { WebSocketServer } from "ws";
 // import { pipeline } from "stream";
 // import { promisify } from "util";
 
@@ -22,8 +23,27 @@ app.get("/api-service/health", function (req, res) {
 });
 
 // Launch listening server on port 8081
-app.listen(8080, function () {
+const server = app.listen(8080, function () {
   console.log("app listening on port 8080");
+});
+
+// --- WEBSOCKET ENDPOINT ---
+const wss = new WebSocketServer({ server, path: "/ws" });
+wss.on("connection", (ws) => {
+  console.log("Client connected to WebSocket");
+
+  ws.send("Welcome to WebSocket!");
+
+  ws.on("message", (message) => {
+    console.log("Received:", message.toString());
+
+    // Echo back
+    ws.send(`You said: ${message}`);
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
 });
 
 // // Promisify pipeline for easier async/await
@@ -61,7 +81,6 @@ app.listen(8080, function () {
 //     res.status(500).send("Error uploading file");
 //   }
 // });
-
 
 // const streamPipeline = promisify(pipeline);
 

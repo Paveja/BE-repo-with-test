@@ -1,0 +1,857 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The template used to create an ECS Cluster with a new VPC and subnets.",
+  "Resources": {
+    "PublicSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "PublicSubnet1IP"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "MapPublicIpOnLaunch": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-public-1"
+          }
+        ]
+      }
+    },
+    "PublicSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "PublicSubnet2IP"
+        },
+        "AvailabilityZone": "us-west-1b",
+        "MapPublicIpOnLaunch": "true",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-public-2"
+          }
+        ]
+      }
+    },
+    "PrivateSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "PrivateSubnet1IP"
+        },
+        "AvailabilityZone": "us-west-1a",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-private-1"
+          }
+        ]
+      }
+    },
+    "PrivateSubnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "CidrBlock": {
+          "Ref": "PrivateSubnet2IP"
+        },
+        "AvailabilityZone": "us-west-1b",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-private-2"
+          }
+        ]
+      }
+    },
+    "RouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-rt"
+          }
+        ]
+      }
+    },
+    "PrivateRouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-private-rt"
+          }
+        ]
+      }
+    },
+    "PublicRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "InternetGateway"
+        }
+      }
+    },
+    "SubnetRouteTableAssociation1": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet1"
+        },
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        }
+      }
+    },
+    "SubnetRouteTableAssociation2": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PublicSubnet2"
+        },
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        }
+      }
+    },
+    "PrivateSubnet1RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnet1"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        }
+      }
+    },
+    "PrivateSubnet2RouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "SubnetId": {
+          "Ref": "PrivateSubnet2"
+        },
+        "RouteTableId": {
+          "Ref": "PrivateRouteTable"
+        }
+      }
+    },
+    "MyDBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupName": "expected-azure-cheetah-db-subnet-group",
+        "DBSubnetGroupDescription": "Subnet group for RDS",
+        "SubnetIds": [
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "expected-azure-cheetah-db-subnet-group"
+          }
+        ]
+      }
+    },
+    "ECSLaunchTemplate": {
+      "Type": "AWS::EC2::LaunchTemplate",
+      "DependsOn": "ECSCluster",
+      "Properties": {
+        "LaunchTemplateData": {
+          "ImageId": {
+            "Ref": "LatestECSOptimizedAMI"
+          },
+          "NetworkInterfaces": [
+            {
+              "AssociatePublicIpAddress": true,
+              "DeviceIndex": 0,
+              "DeleteOnTermination": true,
+              "Groups": [
+                {
+                  "Fn::GetAtt": [
+                    "Ec2SecurityGroup",
+                    "GroupId"
+                  ]
+                }
+              ]
+            }
+          ],
+          "KeyName": "ecs-cluster",
+          "IamInstanceProfile": {
+            "Arn": {
+              "Ref": "IamRoleInstanceProfile"
+            }
+          },
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash\n",
+                  "echo ECS_CLUSTER=",
+                  {
+                    "Ref": "ECSClusterName"
+                  },
+                  " >> /etc/ecs/ecs.config\n",
+                  "yum install -y -q aws-cli jq amazon-cloudwatch-agent\n",
+                  "cat <<'EOF' > /usr/local/bin/dynamic-cloudwatch.sh\n",
+                  "#!/bin/bash\n",
+                  "generate_config() {\n",
+                  "  local insights_json=\"$1\"\n",
+                  "  local config_file=\"/opt/aws/amazon-cloudwatch-agent/bin/config.json\"\n",
+                  "  echo '{\n",
+                  "  \"metrics\": {\n",
+                  "    \"namespace\": \"EC2/MemoryAndDisk\",\n",
+                  "    \"append_dimensions\": {\n",
+                  "      \"InstanceId\": \"${aws:InstanceId}\"\n",
+                  "    },\n",
+                  "    \"aggregation_dimensions\": [[\"InstanceId\"]],\n",
+                  "    \"metrics_collected\": {' > \"$config_file\"\n",
+                  "  local types_with_resources=(\"cpu\" \"disk\" \"diskio\")\n",
+                  "  local keys=($(echo \"$insights_json\" | jq -r 'keys[]'))\n",
+                  "  local total=${#keys[@]}\n",
+                  "  for i in \"${!keys[@]}\"; do\n",
+                  "    local key=\"${keys[$i]}\"\n",
+                  "    local measurements=$(echo \"$insights_json\" | jq -c --arg k \"$key\" '.[$k]')\n",
+                  "    echo \"      \\\"$key\\\": {\" >> \"$config_file\"\n",
+                  "    echo \"        \\\"measurement\\\": [\" >> \"$config_file\"\n",
+                  "    echo \"$measurements\" | jq -r '.[] | \"          \\\"\" + . + \"\\\",\"' >> \"$config_file\"\n",
+                  "    sed -i '$ s/,$//' \"$config_file\"\n",
+                  "    echo \"        ],\" >> \"$config_file\"\n",
+                  "    echo \"        \\\"metrics_collection_interval\\\": 300\" >> \"$config_file\"\n",
+                  "    if [[ \" ${types_with_resources[@]} \" =~ \" $key \" ]]; then\n",
+                  "      echo \"        ,\\\"resources\\\": [\\\"*\\\"]\" >> \"$config_file\"\n",
+                  "      echo \"        ,\\\"aggregation_dimensions\\\": [[\\\"InstanceId\\\"]]\" >> \"$config_file\"\n",
+                  "    fi\n",
+                  "    if [[ \"$i\" -lt $((total - 1)) ]]; then\n",
+                  "      echo \"      },\" >> \"$config_file\"\n",
+                  "    else\n",
+                  "      echo \"      }\" >> \"$config_file\"\n",
+                  "    fi\n",
+                  "  done\n",
+                  "  echo '    }\n",
+                  "  }\n",
+                  "}' >> \"$config_file\"\n",
+                  "}\n",
+                  "# Main execution\n",
+                  "echo \"[INFO] Starting dynamic-cloudwatch.sh at $(date)\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "task_json=$(curl -s http://localhost:51678/v1/tasks 2>/dev/null)\n",
+                  "echo \"[DEBUG] ECS task metadata: $task_json\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "if [[ -n \"$task_json\" && \"$task_json\" != \"null\" ]]; then\n",
+                  "  docker_id=$(echo \"$task_json\" | jq -r '.Tasks[0].Containers[0].DockerId' 2>/dev/null)\n",
+                  "  echo \"[DEBUG] Extracted Docker ID: $docker_id\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "  \n",
+                  "  if [[ -n \"$docker_id\" && \"$docker_id\" != \"null\" ]]; then\n",
+                  "    crontab -l | grep -v '/usr/local/bin/dynamic-cloudwatch.sh' | crontab -\n",
+                  "    container_env=$(docker exec \"$docker_id\" env 2>&1)\n",
+                  "    echo \"[DEBUG] Container env output:\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "    echo \"$container_env\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "    \n",
+                  "    insights=$(echo \"$container_env\" | grep '^insights=' | cut -d= -f2- | head -1)\n",
+                  "    echo \"[DEBUG] Raw 'insights' value: $insights\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "    \n",
+                  "    if [[ -n \"$insights\" ]] && echo \"$insights\" | jq . >/dev/null 2>&1; then\n",
+                  "      echo \"[INFO] Valid 'insights' JSON found.\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "      generate_config \"$insights\"\n",
+                  "    else\n",
+                  "      echo \"[WARN] 'insights' is not valid JSON or is empty. Using fallback.\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "      generate_config '{\"mem\": [\"mem_used\"], \"diskio\": [\"read_bytes\", \"write_bytes\"]}'\n",
+                  "    fi\n",
+                  "else\n",
+                  "  echo \"[WARN] ECS task metadata not found. Will retry in next cron cycle.\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "  exit 0\n",
+                  "fi\n",
+                  "else\n",
+                  "  echo \"[WARN] ECS task metadata not found. Will retry in next cron cycle.\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "  exit 0\n",
+                  "fi\n",
+                  "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \\\n",
+                  "  -a fetch-config -m ec2 \\\n",
+                  "  -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json -s >> /var/log/dynamic-cloudwatch.log 2>&1\n",
+                  "  \n",
+                  "echo \"[INFO] Finished dynamic-cloudwatch.sh at $(date)\" >> /var/log/dynamic-cloudwatch.log\n",
+                  "EOF\n",
+                  "chmod +x /usr/local/bin/dynamic-cloudwatch.sh\n",
+                  "echo '*/5 * * * * /usr/local/bin/dynamic-cloudwatch.sh >> /var/log/dynamic-cloudwatch.log 2>&1' | sudo crontab -"
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ECSCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterName": {
+          "Ref": "ECSClusterName"
+        },
+        "ClusterSettings": [
+          {
+            "Name": "containerInsights",
+            "Value": "disabled"
+          }
+        ],
+        "ServiceConnectDefaults": {
+          "Namespace": "dev-cluster"
+        },
+        "Tags": [
+          {
+            "Key": "name",
+            "Value": "expected-azure-cheetah-cluster"
+          }
+        ]
+      }
+    },
+    "Ec2SecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Created in ECS Console",
+        "GroupName": "expected-azure-cheetah-cluster-instance-sg",
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "SecurityGroupIngress": [
+          {
+            "FromPort": 80,
+            "ToPort": 80,
+            "IpProtocol": "tcp",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "FromPort": 443,
+            "ToPort": 443,
+            "IpProtocol": "tcp",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "FromPort": 8080,
+            "ToPort": 8080,
+            "IpProtocol": "tcp",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "FromPort": 22,
+            "ToPort": 22,
+            "IpProtocol": "tcp",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "StrikepreviewPrivateNamespace": {
+      "Type": "AWS::ServiceDiscovery::PrivateDnsNamespace",
+      "Properties": {
+        "Name": "Strike.preview.local",
+        "Vpc": {
+          "Ref": "VPC"
+        }
+      }
+    },
+    "StrikepreviewVpcLink": {
+      "Type": "AWS::ApiGatewayV2::VpcLink",
+      "Properties": {
+        "Name": "Strike-preview-vpc-link",
+        "SubnetIds": [
+          {
+            "Ref": "PublicSubnet1"
+          },
+          {
+            "Ref": "PublicSubnet2"
+          },
+          {
+            "Ref": "PrivateSubnet1"
+          },
+          {
+            "Ref": "PrivateSubnet2"
+          }
+        ],
+        "SecurityGroupIds": [
+          {
+            "Ref": "Ec2SecurityGroup"
+          }
+        ]
+      }
+    },
+    "StrikepreviewhttpCertificateManager": {
+      "Type": "Custom::RequestACMCertificate",
+      "Properties": {
+        "ServiceToken": "arn:aws:sns:us-west-1:120569605035:120569605035-cloudformation",
+        "DomainName": "19f3018ce158.account-1.poddleops.com",
+        "ValidationMethod": "DNS",
+        "ValidationDomain": "poddleops.com",
+        "AccountId": "120569605035",
+        "HostedZoneId": "Z0892304OQTFZ4ZOLMU0",
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": ":p=Strike:a=Knight:e=preview:b=main"
+          }
+        ],
+        "Region": "us-west-1",
+        "RoleArn": "arn:aws:iam::120569605035:role/OrganizationAccountAccessRole"
+      }
+    },
+    "StrikepreviewhttpCustomDomain": {
+      "Type": "AWS::ApiGatewayV2::DomainName",
+      "DependsOn": [
+        "StrikepreviewhttpCertificateManager"
+      ],
+      "Properties": {
+        "DomainName": "19f3018ce158.account-1.poddleops.com",
+        "DomainNameConfigurations": [
+          {
+            "CertificateArn": {
+              "Ref": "StrikepreviewhttpCertificateManager"
+            },
+            "EndpointType": "REGIONAL"
+          }
+        ]
+      }
+    },
+    "StrikepreviewhttpApiGateway": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "Strike-preview-http-gateway",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "StrikepreviewhttpStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "DependsOn": "StrikepreviewhttpApiGateway",
+      "Properties": {
+        "ApiId": {
+          "Ref": "StrikepreviewhttpApiGateway"
+        },
+        "StageName": "$default",
+        "AutoDeploy": true
+      }
+    },
+    "StrikepreviewhttpCustomDomainMapping": {
+      "Type": "AWS::ApiGatewayV2::ApiMapping",
+      "DependsOn": [
+        "StrikepreviewhttpApiGateway",
+        "StrikepreviewhttpCustomDomain",
+        "StrikepreviewhttpStage"
+      ],
+      "Properties": {
+        "ApiId": {
+          "Ref": "StrikepreviewhttpApiGateway"
+        },
+        "DomainName": {
+          "Ref": "StrikepreviewhttpCustomDomain"
+        },
+        "Stage": {
+          "Ref": "StrikepreviewhttpStage"
+        }
+      }
+    },
+    "StrikepreviewhttpAliasRecord": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "HostedZoneId": "Z0892304OQTFZ4ZOLMU0",
+        "Name": "19f3018ce158.account-1.poddleops.com",
+        "Type": "A",
+        "AliasTarget": {
+          "HostedZoneId": {
+            "Fn::GetAtt": [
+              "StrikepreviewhttpCustomDomain",
+              "RegionalHostedZoneId"
+            ]
+          },
+          "DNSName": {
+            "Fn::GetAtt": [
+              "StrikepreviewhttpCustomDomain",
+              "RegionalDomainName"
+            ]
+          }
+        }
+      }
+    },
+    "Knightmainrid1TaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "Family": "knight-main-rid-1-td",
+        "Cpu": "1800",
+        "Memory": "1800",
+        "NetworkMode": "bridge",
+        "RequiresCompatibilities": [
+          "EC2"
+        ],
+        "ContainerDefinitions": [
+          {
+            "Image": "120569605035.dkr.ecr.us-west-2.amazonaws.com/strike-knight-preview-main-rid_1:V1",
+            "Environment": [
+              {
+                "Name": "BASE_URL",
+                "Value": "/api/v1"
+              },
+              {
+                "Name": "insights",
+                "Value": "{\"diskio\":[\"read_bytes\",\"write_bytes\"],\"mem\":[\"mem_used\"]}"
+              }
+            ],
+            "logConfiguration": {
+              "logDriver": "awslogs",
+              "options": {
+                "awslogs-group": "strike-knightpreviewmain",
+                "awslogs-region": "us-west-1",
+                "awslogs-stream-prefix": "strike-knightpreviewmain-container-logs"
+              }
+            },
+            "Name": "knight-main-rid-1-container",
+            "Cpu": 1800,
+            "Memory": 1800,
+            "MemoryReservation": 1700,
+            "healthCheck": {
+              "command": [
+                "CMD-SHELL",
+                "exit 0"
+              ],
+              "interval": 10,
+              "timeout": 5,
+              "retries": 1,
+              "startPeriod": 5
+            },
+            "Essential": true,
+            "PortMappings": [
+              {
+                "ContainerPort": 8080,
+                "HostPort": 8080,
+                "Protocol": "tcp",
+                "Name": "strike-preview-port"
+              }
+            ]
+          }
+        ],
+        "TaskRoleArn": "arn:aws:iam::120569605035:role/OrganizationAccountAccessRole",
+        "ExecutionRoleArn": "arn:aws:iam::120569605035:role/OrganizationAccountAccessRole",
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": ":p=Strike:a=Knight:e=preview:b=main"
+          }
+        ]
+      }
+    },
+    "Knightmainrid1ServiceDiscovery": {
+      "Type": "AWS::ServiceDiscovery::Service",
+      "Properties": {
+        "Name": "Knight-service",
+        "NamespaceId": {
+          "Ref": "StrikepreviewPrivateNamespace"
+        },
+        "DnsConfig": {
+          "NamespaceId": {
+            "Ref": "StrikepreviewPrivateNamespace"
+          },
+          "RoutingPolicy": "MULTIVALUE",
+          "DnsRecords": [
+            {
+              "Type": "SRV",
+              "TTL": 15
+            }
+          ]
+        },
+        "HealthCheckCustomConfig": {
+          "FailureThreshold": 3
+        }
+      }
+    },
+    "Knightmainrid1ECSService": {
+      "Type": "AWS::ECS::Service",
+      "DependsOn": [
+        "ECSCluster",
+        "Knightmainrid1TaskDefinition",
+        "Knightmainrid1ServiceDiscovery"
+      ],
+      "Properties": {
+        "Cluster": {
+          "Ref": "ECSClusterName"
+        },
+        "TaskDefinition": {
+          "Ref": "Knightmainrid1TaskDefinition"
+        },
+        "ServiceName": "knight-main-rid-1-service",
+        "SchedulingStrategy": "REPLICA",
+        "DesiredCount": 1,
+        "CapacityProviderStrategy": [
+          {
+            "CapacityProvider": "CapacityProviderT3SmallStrikepreview",
+            "Base": 0,
+            "Weight": 1
+          }
+        ],
+        "HealthCheckGracePeriodSeconds": 120,
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100,
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true
+          }
+        },
+        "DeploymentController": {
+          "Type": "ECS"
+        },
+        "ServiceRegistries": [
+          {
+            "RegistryArn": {
+              "Fn::GetAtt": [
+                "Knightmainrid1ServiceDiscovery",
+                "Arn"
+              ]
+            },
+            "ContainerName": "knight-main-rid-1-container",
+            "ContainerPort": 8080
+          }
+        ],
+        "PlacementStrategies": [
+          {
+            "Field": "attribute:ecs.availability-zone",
+            "Type": "spread"
+          },
+          {
+            "Field": "instanceId",
+            "Type": "spread"
+          }
+        ],
+        "PlacementConstraints": [],
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": ":p=Strike:a=Knight:e=preview:b=main"
+          }
+        ],
+        "EnableECSManagedTags": true
+      }
+    },
+    "Knightmainrid1ServiceIntegration": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "DependsOn": "Knightmainrid1ECSService",
+      "Properties": {
+        "ApiId": {
+          "Ref": "StrikepreviewhttpApiGateway"
+        },
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "Knightmainrid1ServiceDiscovery",
+            "Arn"
+          ]
+        },
+        "IntegrationMethod": "ANY",
+        "ConnectionType": "VPC_LINK",
+        "ConnectionId": {
+          "Ref": "StrikepreviewVpcLink"
+        },
+        "PayloadFormatVersion": "1.0"
+      }
+    },
+    "Knightmainrid1GatewayRoute": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "DependsOn": "Knightmainrid1ServiceIntegration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "StrikepreviewhttpApiGateway"
+        },
+        "RouteKey": "ANY /api-service/{proxy+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "Knightmainrid1ServiceIntegration"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ECSAutoScalingGroupT3SmallStrikepreview": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "MinSize": 1,
+        "MaxSize": 2,
+        "DesiredCapacity": 1,
+        "MixedInstancesPolicy": {
+          "LaunchTemplate": {
+            "LaunchTemplateSpecification": {
+              "LaunchTemplateId": {
+                "Ref": "ECSLaunchTemplate"
+              },
+              "Version": {
+                "Fn::GetAtt": [
+                  "ECSLaunchTemplate",
+                  "LatestVersionNumber"
+                ]
+              }
+            },
+            "Overrides": [
+              {
+                "InstanceType": "t3.small"
+              }
+            ]
+          },
+          "InstancesDistribution": {
+            "OnDemandBaseCapacity": 0,
+            "OnDemandPercentageAboveBaseCapacity": 0,
+            "SpotAllocationStrategy": "lowest-price"
+          }
+        },
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "PublicSubnet1"
+          },
+          {
+            "Ref": "PublicSubnet2"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "environment",
+            "Value": ":os=alpha",
+            "PropagateAtLaunch": true
+          }
+        ]
+      },
+      "DependsOn": [
+        "ECSCluster",
+        "ECSLaunchTemplate",
+        "PublicSubnet1",
+        "PublicSubnet2"
+      ],
+      "UpdatePolicy": {
+        "AutoScalingRollingUpdate": {
+          "MinInstancesInService": 0,
+          "MaxBatchSize": 1,
+          "PauseTime": "PT2M"
+        }
+      }
+    },
+    "CapacityProviderT3SmallStrikepreview": {
+      "Type": "AWS::ECS::CapacityProvider",
+      "Properties": {
+        "Name": "CapacityProviderT3SmallStrikepreview",
+        "AutoScalingGroupProvider": {
+          "AutoScalingGroupArn": {
+            "Ref": "ECSAutoScalingGroupT3SmallStrikepreview"
+          },
+          "ManagedScaling": {
+            "Status": "ENABLED",
+            "TargetCapacity": 100
+          },
+          "ManagedTerminationProtection": "DISABLED"
+        }
+      },
+      "DependsOn": [
+        "ECSAutoScalingGroupT3SmallStrikepreview"
+      ]
+    },
+    "ClusterCPAssociation": {
+      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+      "Properties": {
+        "Cluster": {
+          "Ref": "ECSClusterName"
+        },
+        "CapacityProviders": [
+          {
+            "Ref": "CapacityProviderT3SmallStrikepreview"
+          }
+        ],
+        "DefaultCapacityProviderStrategy": [
+          {
+            "Base": 0,
+            "Weight": 1,
+            "CapacityProvider": {
+              "Ref": "CapacityProviderT3SmallStrikepreview"
+            }
+          }
+        ]
+      },
+      "DependsOn": [
+        "ECSCluster",
+        "CapacityProviderT3SmallStrikepreview"
+      ]
+    }
+  },
+  "Outputs": {
+    "Storage": {
+      "Value": "alpha-strike-preview|knight-main|Strike|Knight|preview|main",
+      "Export": {
+        "Name": "expectedAzureCheetahStorage"
+      }
+    }
+  },
+  "Parameters": {
+    "VPC": {
+      "Type": "String",
+      "Default": "vpc-05b7fe7d8bee1b357"
+    },
+    "ECSClusterName": {
+      "Type": "String",
+      "Default": "expected-azure-cheetah-cluster"
+    },
+    "EC2InstanceType": {
+      "Type": "String",
+      "Default": "t3.small"
+    },
+    "InternetGateway": {
+      "Type": "String",
+      "Default": "igw-08955ef7941878697"
+    },
+    "PublicSubnet1IP": {
+      "Type": "String",
+      "Default": "10.0.1.0/25"
+    },
+    "PublicSubnet2IP": {
+      "Type": "String",
+      "Default": "10.0.1.128/25"
+    },
+    "PrivateSubnet1IP": {
+      "Type": "String",
+      "Default": "10.0.2.0/25"
+    },
+    "PrivateSubnet2IP": {
+      "Type": "String",
+      "Default": "10.0.2.128/25"
+    },
+    "LatestECSOptimizedAMI": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/kernel-5.10/recommended/image_id"
+    },
+    "IamRoleInstanceProfile": {
+      "Type": "String",
+      "Default": "arn:aws:iam::120569605035:instance-profile/RevolteExecutionRole"
+    }
+  }
+}
