@@ -31,7 +31,7 @@ revolte:
           name: web_service
           entryPoint: app.js
           properties:
-            health: /health
+            health: /user-vault/health
             port: 8080
             variables:
               BASE_URL: /api/v1

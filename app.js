@@ -15,7 +15,7 @@ app.get("/", function (req, res) {
 });
 
 // Define request response in root URL (/)
-app.get("/health", function (req, res) {
+app.get("/user-vault/health", function (req, res) {
   res.json({
     project1: true,
     app1: true,
