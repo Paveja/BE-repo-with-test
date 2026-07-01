@@ -68,7 +68,8 @@ revolte:
           name: web_service
           entryPoint: index.js
           properties:
-            health: /health
+            health: /user-vault/health
+            loadBalancerMode: 'dedicated'
             port: 8080
             loadBalancerMode: dedicated
             variables:

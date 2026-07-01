@@ -23,43 +23,75 @@ app.get("/user-vault/health", function (req, res) {
   });
 });
 
+// New Endpoint 1 - Get user details
+app.get("/user-vault/user/:id", function (req, res) {
+  res.json({
+    id: req.params.id,
+    name: "John Doe",
+    role: "QA Engineer"
+  });
+});
+
+// New Endpoint 2 - Create user
+app.post("/user-vault/user", function (req, res) {
+  const { name, role } = req.body;
+
+  if (!name || !role) {
+    return res.status(400).json({
+      success: false,
+      message: "name and role are required"
+    });
+  }
+
+  res.status(201).json({
+    success: true,
+    user: {
+      id: 1,
+      name,
+      role
+    }
+  });
+});
+
+
+
 // Launch listening server on port 8081
-const server = app.listen(8080, function () {
+export const server = app.listen(8080, function () {
   console.log("app listening on port 8080");
 });
 
-// --- WEBSOCKET ENDPOINT ---
-const wss = new WebSocketServer({ server, path: "/ws" });
+// // --- WEBSOCKET ENDPOINT ---
+// const wss = new WebSocketServer({ server, path: "/ws" });
 
-wss.on("connection", (ws) => {
-  console.log("Client connected to WebSocket");
+// wss.on("connection", (ws) => {
+//   console.log("Client connected to WebSocket");
 
-  ws.send("Welcome to WebSocket!");
+//   ws.send("Welcome to WebSocket!");
 
-  // Send message every 5 seconds
-  const intervalId = setInterval(() => {
-    if (ws.readyState === ws.OPEN) {
-      ws.send("Ping from server every 5 seconds");
-    }
-  }, 5000);
+//   // Send message every 5 seconds
+//   const intervalId = setInterval(() => {
+//     if (ws.readyState === ws.OPEN) {
+//       ws.send("Ping from server every 5 seconds");
+//     }
+//   }, 5000);
 
-  ws.on("message", (message) => {
-    console.log("Received:", message.toString());
-    ws.send(`You said: ${message}`);
-  });
+//   ws.on("message", (message) => {
+//     console.log("Received:", message.toString());
+//     ws.send(`You said: ${message}`);
+//   });
 
-  ws.on("close", () => {
-    console.log("Client disconnected");
+//   ws.on("close", () => {
+//     console.log("Client disconnected");
 
-    // Stop the interval when client disconnects
-    clearInterval(intervalId);
-  });
+//     // Stop the interval when client disconnects
+//     clearInterval(intervalId);
+//   });
 
-  ws.on("error", (err) => {
-    console.error("Socket error:", err);
-    clearInterval(intervalId);
-  });
-});
+//   ws.on("error", (err) => {
+//     console.error("Socket error:", err);
+//     clearInterval(intervalId);
+//   });
+// });
 
 // // Promisify pipeline for easier async/await
 // app.use("/upload", express.raw({ type: "*/*", limit: "50mb" }));
@@ -129,3 +161,5 @@ wss.on("connection", (ws) => {
 //     res.status(500).send("Error downloading object");
 //   }
 // });
+
+export default app;
