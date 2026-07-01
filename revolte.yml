@@ -16,6 +16,7 @@ revolte:
           entryPoint: index.js
           properties:
             health: /health
+            loadBalancerMode: dedicated
             port: 8080
             variables:
               BASE_URL: /api/v1
@@ -68,7 +69,6 @@ revolte:
           entryPoint: index.js
           properties:
             health: /user-vault/health
-            loadBalancerMode: 'dedicated'
             port: 8080
             loadBalancerMode: dedicated
             variables:
