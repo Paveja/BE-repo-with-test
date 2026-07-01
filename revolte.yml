@@ -2,6 +2,9 @@ revolte:
   version: '1.0'
   project: demo-projs
   appName: node-app
+  config:
+    testSuite:
+      command: npm test
   env:
     qa:
       testSuite: true
