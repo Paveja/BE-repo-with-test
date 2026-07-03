@@ -1,7 +1,7 @@
 revolte:
   version: '1.0'
-  project: Prod Test
-  appName: testcase
+  project: New project
+  appName: BE app
   config:
     testSuite:
       command: npm test
