@@ -1,17 +1,14 @@
 revolte:
   version: '1.0'
-  project: New project
-  appName: BE app
-  config:
-    testSuite:
-      command: npm test
+  project: sample project
+  appName: be repo
   workflow:
     developerWorkflow:
       enabled: true
   env:
     staging:
-      branch: main
       testSuite: true
+      branch: main
       services:
         rid_1:
           type: WEB_SERVICE
@@ -28,8 +25,8 @@ revolte:
             memory: 1
             storage: 30
     qa:
-      branch: main
       testSuite: true
+      branch: main
       services:
         rid_1:
           type: WEB_SERVICE
@@ -46,8 +43,8 @@ revolte:
             memory: 1
             storage: 30
     production:
-      branch: main
       testSuite: true
+      branch: main
       services:
         rid_1:
           type: WEB_SERVICE
