@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Add any two numbers with clear, immediate feedback."
+    />
+    <title>Quick addition</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="calculator-shell">
+      <section class="calculator" aria-labelledby="page-title">
+        <p class="eyebrow">Pocket calculation</p>
+        <h1 id="page-title">Quick addition</h1>
+        <p class="intro">Enter two numbers. Your total will appear here.</p>
+
+        <form id="addition-form" novalidate>
+          <div class="field-grid">
+            <div class="field">
+              <label for="first-number">First number</label>
+              <input
+                id="first-number"
+                name="firstNumber"
+                type="number"
+                inputmode="decimal"
+                step="any"
+                autocomplete="off"
+                aria-describedby="first-number-error"
+              />
+              <p id="first-number-error" class="field-error" aria-live="polite"></p>
+            </div>
+
+            <span class="operator" aria-hidden="true">+</span>
+
+            <div class="field">
+              <label for="second-number">Second number</label>
+              <input
+                id="second-number"
+                name="secondNumber"
+                type="number"
+                inputmode="decimal"
+                step="any"
+                autocomplete="off"
+                aria-describedby="second-number-error"
+              />
+              <p id="second-number-error" class="field-error" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div
+            id="form-error"
+            class="form-error"
+            role="alert"
+            aria-live="assertive"
+            tabindex="-1"
+            hidden
+          ></div>
+
+          <button id="add-button" type="submit">Add numbers</button>
+        </form>
+
+        <section class="result-panel" aria-live="polite" aria-atomic="true">
+          <p class="result-label">Your total</p>
+          <output id="result" class="result-value">—</output>
+        </section>
+      </section>
+    </main>
+    <script src="/app-client.js" defer></script>
+  </body>
+</html>

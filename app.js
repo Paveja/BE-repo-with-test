@@ -1,21 +1,47 @@
-// Load express module using `require` directive
-
-// import multer from "multer";
-// import { S3Client, PutObjectCommand,GetObjectCommand } from "@aws-sdk/client-s3";
-// import fs from "fs";
 import express from "express";
-import { WebSocketServer } from "ws";
-// import { pipeline } from "stream";
-// import { promisify } from "util";
+import path from "path";
+import { fileURLToPath } from "url";
 
-let app = express();
-// Define request response in root URL (/)
-app.get("/", function (req, res) {
-  res.send("Dockerize the node app");
+const app = express();
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+const publicDirectory = path.join(currentDirectory, "public");
+const port = Number(process.env.PORT) || 4173;
+
+app.use(express.json({ limit: "10kb" }));
+app.use(express.static(publicDirectory));
+
+function parseFiniteNumber(value) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+app.post("/api/add", (req, res) => {
+  const firstNumber = parseFiniteNumber(req.body?.firstNumber);
+  const secondNumber = parseFiniteNumber(req.body?.secondNumber);
+  const fields = [];
+
+  if (firstNumber === null) {
+    fields.push("firstNumber");
+  }
+
+  if (secondNumber === null) {
+    fields.push("secondNumber");
+  }
+
+  if (fields.length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Enter a valid finite number in each field.",
+      fields,
+    });
+  }
+
+  return res.json({
+    success: true,
+    sum: firstNumber + secondNumber,
+  });
 });
 
-// Define request response in root URL (/)
-app.get("/user-vault/health", function (req, res) {
+app.get("/user-vault/health", (req, res) => {
   res.json({
     project1: true,
     app1: true,
@@ -23,41 +49,51 @@ app.get("/user-vault/health", function (req, res) {
   });
 });
 
-// New Endpoint 1 - Get user details
-app.get("/user-vault/user/:id", function (req, res) {
+app.get("/user-vault/user/:id", (req, res) => {
   res.json({
     id: req.params.id,
     name: "John Doe",
-    role: "QA Engineer"
+    role: "QA Engineer",
   });
 });
 
-// New Endpoint 2 - Create user
-app.post("/user-vault/user", function (req, res) {
+app.post("/user-vault/user", (req, res) => {
   const { name, role } = req.body;
 
   if (!name || !role) {
     return res.status(400).json({
       success: false,
-      message: "name and role are required"
+      message: "name and role are required",
     });
   }
 
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     user: {
       id: 1,
       name,
-      role
-    }
+      role,
+    },
   });
 });
 
+app.use((error, req, res, next) => {
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({
+      success: false,
+      message: "Send a valid JSON request body.",
+    });
+  }
 
+  console.error("Unexpected request error", error);
+  return res.status(500).json({
+    success: false,
+    message: "Something went wrong. Try again.",
+  });
+});
 
-// Launch listening server on port 8081
-export const server = app.listen(8080, function () {
-  console.log("app listening on port 8080");
+export const server = app.listen(port, () => {
+  console.log(`app listening on port ${port}`);
 });
 
 // // --- WEBSOCKET ENDPOINT ---
