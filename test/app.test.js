@@ -30,6 +30,19 @@ describe("API Tests", () => {
     expect(response.body.name).toBe("John Doe");
   });
 
+  test("GET /user-vault/users should return a list of users", async () => {
+    const response = await request(app).get("/user-vault/users");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([
+      {
+        id: "123",
+        name: "John Doe",
+        role: "QA Engineer"
+      }
+    ]);
+  });
+
 //   test("POST /user-vault/user should create user", async () => {
 //     const response = await request(app)
 //       .post("/user-vault/user")

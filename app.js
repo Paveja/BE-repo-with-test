@@ -20,6 +20,7 @@ app.get("/user-vault/health", function (req, res) {
     project1: true,
     app1: true,
     success: true,
+    env: "preview",
   });
 });
 
@@ -30,6 +31,17 @@ app.get("/user-vault/user/:id", function (req, res) {
     name: "John Doe",
     role: "QA Engineer"
   });
+});
+
+// List users
+app.get("/user-vault/users", function (req, res) {
+  res.json([
+    {
+      id: "123",
+      name: "John Doe",
+      role: "QA Engineer"
+    }
+  ]);
 });
 
 // New Endpoint 2 - Create user
