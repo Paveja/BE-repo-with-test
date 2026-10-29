@@ -11,7 +11,8 @@ describe("API Tests", () => {
     const response = await request(app).get("/");
 
     expect(response.statusCode).toBe(200);
-    expect(response.text).toBe("Dockerize the node app");
+    expect(response.text).toContain("Add two numbers.");
+    expect(response.text).toContain("id=\"addition-form\"");
   });
 
   test("GET /user-vault/health should return health status", async () => {
