@@ -5,14 +5,18 @@
 // import fs from "fs";
 import express from "express";
 import { WebSocketServer } from "ws";
+import path from "path";
+import { fileURLToPath } from "url";
 // import { pipeline } from "stream";
 // import { promisify } from "util";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 let app = express();
-// Define request response in root URL (/)
-app.get("/", function (req, res) {
-  res.send("Dockerize the node app");
-});
+
+// Serve the calculator UI and its assets from /public (index.html at "/")
+app.use(express.static(path.join(__dirname, "public")));
 
 // Define request response in root URL (/)
 app.get("/user-vault/health", function (req, res) {

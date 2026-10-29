@@ -7,11 +7,18 @@ afterAll(() => {
 });
 describe("API Tests", () => {
 
-  test("GET / should return app message", async () => {
+  test("GET / should return the calculator page", async () => {
     const response = await request(app).get("/");
 
     expect(response.statusCode).toBe(200);
-    expect(response.text).toBe("Dockerize the node app");
+    expect(response.type).toBe("text/html");
+    expect(response.text).toContain("Calculator");
+  });
+
+  test("GET /calculator.js should be served as a static asset", async () => {
+    const response = await request(app).get("/calculator.js");
+
+    expect(response.statusCode).toBe(200);
   });
 
   test("GET /user-vault/health should return health status", async () => {

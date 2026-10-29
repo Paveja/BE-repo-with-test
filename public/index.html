@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Calculator</title>
+  <meta name="description" content="A fast, everyday calculator for arithmetic, percentages, discounts, and splitting bills." />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="calculator" role="group" aria-label="Calculator">
+      <div class="display" aria-live="polite">
+        <div class="display__expression" id="expression"></div>
+        <div class="display__rail" aria-hidden="true"></div>
+        <div class="display__value" id="output">0</div>
+      </div>
+
+      <div class="keypad">
+        <button class="key key--util" type="button" data-action="clear">AC</button>
+        <button class="key key--util" type="button" data-action="sign">+/&minus;</button>
+        <button class="key key--util" type="button" data-action="percent">%</button>
+        <button class="key key--operator" type="button" data-action="operator" data-value="/" aria-label="Divide">&divide;</button>
+
+        <button class="key key--number" type="button" data-action="number" data-value="7">7</button>
+        <button class="key key--number" type="button" data-action="number" data-value="8">8</button>
+        <button class="key key--number" type="button" data-action="number" data-value="9">9</button>
+        <button class="key key--operator" type="button" data-action="operator" data-value="*" aria-label="Multiply">&times;</button>
+
+        <button class="key key--number" type="button" data-action="number" data-value="4">4</button>
+        <button class="key key--number" type="button" data-action="number" data-value="5">5</button>
+        <button class="key key--number" type="button" data-action="number" data-value="6">6</button>
+        <button class="key key--operator" type="button" data-action="operator" data-value="-" aria-label="Subtract">&minus;</button>
+
+        <button class="key key--number" type="button" data-action="number" data-value="1">1</button>
+        <button class="key key--number" type="button" data-action="number" data-value="2">2</button>
+        <button class="key key--number" type="button" data-action="number" data-value="3">3</button>
+        <button class="key key--operator" type="button" data-action="operator" data-value="+" aria-label="Add">+</button>
+
+        <button class="key key--util" type="button" data-action="delete" aria-label="Delete last digit">&larr;</button>
+        <button class="key key--number" type="button" data-action="number" data-value="0">0</button>
+        <button class="key key--number" type="button" data-action="decimal">.</button>
+        <button class="key key--equals" type="button" data-action="equals" aria-label="Equals">=</button>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/calculator.js"></script>
+</body>
+</html>
