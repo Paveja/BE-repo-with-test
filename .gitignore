@@ -1,3 +1,10 @@
 node_modules
 /build*
 .env*
+
+# Crash artifacts
+core
+core.*
+*.heapsnapshot
+report.*.json
+isolate-*.log

@@ -4,14 +4,20 @@
 // import { S3Client, PutObjectCommand,GetObjectCommand } from "@aws-sdk/client-s3";
 // import fs from "fs";
 import express from "express";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { WebSocketServer } from "ws";
 // import { pipeline } from "stream";
 // import { promisify } from "util";
 
-let app = express();
-// Define request response in root URL (/)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const app = express();
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/", function (req, res) {
-  res.send("Dockerize the node app");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Define request response in root URL (/)
@@ -20,6 +26,7 @@ app.get("/user-vault/health", function (req, res) {
     project1: true,
     app1: true,
     success: true,
+    env: process.env.APP_ENV ?? "preview",
   });
 });
 

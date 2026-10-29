@@ -7,11 +7,21 @@ afterAll(() => {
 });
 describe("API Tests", () => {
 
-  test("GET / should return app message", async () => {
+  test("GET / should return the addition app", async () => {
     const response = await request(app).get("/");
 
     expect(response.statusCode).toBe(200);
-    expect(response.text).toBe("Dockerize the node app");
+    expect(response.type).toBe("text/html");
+    expect(response.text).toContain("Add two numbers.");
+    expect(response.text).toContain('id="addition-form"');
+  });
+
+  test("GET /styles.css should serve the responsive app styles", async () => {
+    const response = await request(app).get("/styles.css");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.type).toBe("text/css");
+    expect(response.text).toContain("prefers-reduced-motion");
   });
 
   test("GET /user-vault/health should return health status", async () => {
