@@ -5,13 +5,18 @@
 // import fs from "fs";
 import express from "express";
 import { WebSocketServer } from "ws";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 // import { pipeline } from "stream";
 // import { promisify } from "util";
 
-let app = express();
-// Define request response in root URL (/)
+const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/", function (req, res) {
-  res.send("Dockerize the node app");
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Define request response in root URL (/)
@@ -19,6 +24,7 @@ app.get("/user-vault/health", function (req, res) {
   res.json({
     project1: true,
     app1: true,
+    env: "preview",
     success: true,
   });
 });

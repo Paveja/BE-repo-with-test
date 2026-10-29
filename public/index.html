@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A calm, simple tool for adding two numbers." />
+    <title>Addition, made clear</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="calculator" aria-labelledby="page-title">
+        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> Everyday arithmetic</div>
+        <div class="intro">
+          <h1 id="page-title">Add two numbers.<br /><em>See it clearly.</em></h1>
+          <p>Enter your numbers below and get a precise answer in one step.</p>
+        </div>
+
+        <form id="addition-form" novalidate>
+          <div class="input-grid">
+            <label class="field" for="first-number">
+              <span class="field-label">First number</span>
+              <input id="first-number" name="firstNumber" type="number" inputmode="decimal" step="any" placeholder="0" autocomplete="off" required />
+            </label>
+            <div class="operator" aria-hidden="true">+</div>
+            <label class="field" for="second-number">
+              <span class="field-label">Second number</span>
+              <input id="second-number" name="secondNumber" type="number" inputmode="decimal" step="any" placeholder="0" autocomplete="off" required />
+            </label>
+          </div>
+
+          <p id="form-message" class="form-message" role="alert" aria-live="polite"></p>
+
+          <div class="actions">
+            <button class="primary-button" type="submit">Add numbers <span aria-hidden="true">↗</span></button>
+            <button class="reset-button" type="reset">Clear</button>
+          </div>
+        </form>
+
+        <section class="result-panel" aria-labelledby="result-label">
+          <div class="result-heading">
+            <span id="result-label">Your result</span>
+            <span class="result-status" id="result-status">Waiting</span>
+          </div>
+          <output id="result" class="result-value" aria-live="polite">—</output>
+          <p id="equation" class="equation">Your answer will appear here</p>
+        </section>
+
+        <footer class="footer-note"><span aria-hidden="true">✦</span> Simple tools for clear thinking</footer>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
