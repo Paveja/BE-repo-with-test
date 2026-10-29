@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Celebrate the win</title>
+    <meta
+      name="description"
+      content="A moment to celebrate a work win with your team."
+    />
+    <link rel="stylesheet" href="/celebrate/styles.css" />
+  </head>
+  <body>
+    <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+    <main class="stage">
+      <section class="card" aria-labelledby="celebration-title">
+        <p class="eyebrow">Milestone reached</p>
+
+        <h1 id="celebration-title" class="title">You did it!</h1>
+
+        <p class="subtitle">
+          Shipping something that matters takes focus, patience and a good deal
+          of persistence. Take a moment before the next thing starts.
+        </p>
+
+        <button id="celebrate-button" class="button" type="button">
+          <span class="button__label" id="celebrate-label">
+            Celebrate the win
+          </span>
+        </button>
+
+        <p class="status" id="celebrate-status" role="status" aria-live="polite">
+          Ready when you are.
+        </p>
+      </section>
+    </main>
+
+    <script src="/celebrate/script.js" defer></script>
+  </body>
+</html>
